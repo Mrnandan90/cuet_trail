@@ -19,4 +19,6 @@ router.get('/list/test-list', studentController.getTestList);
 
 router.post('/test/submit', studentController.submitTest);
 
+router.post('/create', studentController.createStudent);
+
 module.exports = router;

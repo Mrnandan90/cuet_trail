@@ -1,0 +1,42 @@
+# Create Student
+POST http://localhost:3000/student/create
+Content-Type: application/json
+
+{
+  "phone": "8574587460",
+  "name":"Raj",
+  "age":19,
+  "email":"abhinav@gmail.com",
+  "password":"Abhinav@JNU#Emperor",
+  "cuetAttempts": ["2023", "2022"],
+  "batchId":1
+}
+
+###
+
+# Student Login
+POST http://localhost:3000/student/auth
+Content-Type: application/json
+
+{
+  "email":"raj2@gmail.com",
+  "password":"aryan"
+}
+
+###
+
+# Admin Login
+POST http://localhost:3000/admin/auth
+Content-Type: application/json
+
+{
+  "email":"abhinav@gmail.com",
+  "password":"Abhinav@JNU#Emperor"
+}
+
+###
+
+POST http://localhost:3000/verify-auth
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY3MTc2NzgsImV4cCI6MTcwNjcxNzczOH0.r_2WwysjRFExTT0HH6YjF7lwdpnoj_bF7nge7WIJsSk
+Cookie: cuet_access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY3MTc2NzgsImV4cCI6MTcwNjcxNzczOH0.r_2WwysjRFExTT0HH6YjF7lwdpnoj_bF7nge7WIJsSk; cuet_refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY3MTc2NzgsImV4cCI6MTcwNjcxOTQ3OH0.sS8wcVbNma9uwFnT3IxA22m6hBzZIGSCNHFLYl-R_L4; Path=/; Expires=Thu, 30 Jan 2025 15:42:34 GMT;
