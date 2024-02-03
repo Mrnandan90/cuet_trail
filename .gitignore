@@ -131,3 +131,6 @@ dist
 
 # http requests
 .http
+
+# Jet brains
+.idea/
