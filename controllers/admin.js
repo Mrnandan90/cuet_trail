@@ -100,7 +100,7 @@ exports.getLastTestDate = async (req, res, next) => {
 
     res.json({
       status: 1,
-      data: {date: lastTest.startTime},
+      data: { date: lastTest.startTime },
       message: "Request completed successfully",
     });
   } catch (error) {
