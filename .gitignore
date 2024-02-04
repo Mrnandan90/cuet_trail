@@ -133,4 +133,4 @@ dist
 .http
 
 # Jet brains
-idea/
+.idea/

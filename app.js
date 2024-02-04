@@ -1,6 +1,7 @@
 const e = require("express");
 const cookieParser = require('cookie-parser');
 const dotenv = require("dotenv").config();
+const cors = require('cors');
 
 const adminRoutes = require("./routes/admin");
 const studentRoutes = require("./routes/student");
@@ -21,9 +22,14 @@ const app = e();
 app.use(e.urlencoded({ extended: true }));
 app.use(e.json());
 app.use(cookieParser());
+app.use(cors({
+  origin: '*', // Specific allowed origin
+  methods: 'GET,POST,DELETE', // Allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+}));
 
-app.post('/student/auth', auth.studentLogin)
-app.post('/admin/auth', auth.adminLogin)
+app.post('/auth', auth.studentLogin)
+app.post('/admin-auth', auth.adminLogin)
 // app.post('/verify-auth', auth.authenticateToken);
 // app.post('/verify-admin-auth', auth.authenticateAdminToken);
 app.use("/admin", adminRoutes);

@@ -35,9 +35,19 @@ exports.get10BestPerformingStudent = async (req, res, next) => {
         student.dataValues.overallPerformance.accuracy;
       delete student.dataValues.overallPerformance;
     });
-    res.send(topStudents);
+    // res.send(topStudents);
+    res.json({
+      status: 1,
+      data: topStudents,
+      message: "Request completed successfully",
+    });
   } catch (error) {
     console.error("Error:", error);
+    res.json({
+      status: 0,
+      data: error,
+      message: "Something went wrong!",
+    });
   }
 };
 
@@ -66,9 +76,19 @@ exports.get10WorstPerformingStudent = async (req, res, next) => {
         student.dataValues.overallPerformance.accuracy;
       delete student.dataValues.overallPerformance;
     });
-    res.send(bottomStudents);
+    // res.send(bottomStudents);
+    res.json({
+      status: 1,
+      data: bottomStudents,
+      message: "Request completed successfully",
+    });
   } catch (error) {
     console.error("Error:", error);
+    res.json({
+      status: 0,
+      data: error,
+      message: "Something went wrong!",
+    });
   }
 };
 
@@ -78,9 +98,98 @@ exports.getLastTestDate = async (req, res, next) => {
       order: [["createdAt", "DESC"]], // Assuming 'createdAt' is your timestamp or primary key column
     });
 
-    res.send(lastTest);
+    res.json({
+      status: 1,
+      data: {date: lastTest.startTime},
+      message: "Request completed successfully",
+    });
   } catch (error) {
     console.error("Error:", error);
+    res.json({
+      status: 0,
+      data: error,
+      message: "Something went wrong!",
+    });
+  }
+};
+
+exports.getStudentList = async (req, res, next) => {
+  try {
+    const students = await Student.findAll({
+      include: [
+        {
+          model: OverallPerformance,
+          required: true, // Ensure that there is a matching entry in the OverallPerformance table
+        },
+      ],
+    });
+    students.forEach((student, index) => {
+      const string = student.dataValues["cuetAttempts"];
+      const attempts = string.split(" ");
+      student.dataValues["cuetAttempts"] = attempts;
+      delete student.dataValues["password"];
+      delete student.dataValues["createdAt"];
+      delete student.dataValues["updatedAt"];
+      delete student.dataValues["overallPerformance"].dataValues["createdAt"];
+      delete student.dataValues["overallPerformance"].dataValues["updatedAt"];
+      delete student.dataValues["overallPerformance"].dataValues["studentId"];
+    });
+    // res.json(students);
+    res.json({
+      status: 1,
+      data: students,
+      message: "Request completed successfully",
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.json({
+      status: 0,
+      data: error,
+      message: "Something went wrong!",
+    });
+  }
+};
+
+exports.getBatchList = async (req, res, next) => {
+  try {
+    const batches = await Batch.findAll();
+    for (let i = 0; i < batches.length; i++) {
+      const batch = batches[i];
+      const students = await Student.findAll({
+        where: { batchId: batch.id },
+        include: [
+          {
+            model: OverallPerformance,
+            required: true, // Ensure that there is a matching entry in the OverallPerformance table
+          },
+        ],
+      });
+      // console.log(students);
+      const count = students.length;
+      batches[i].dataValues["studentCount"] = count;
+      let sumAccuracy = 0;
+      for (let j = 0; j < count; j++) {
+        sumAccuracy +=
+          students[j].dataValues["overallPerformance"].dataValues["accuracy"];
+      }
+      batches[i].dataValues["averageAccuracy"] =
+        Math.round((sumAccuracy / count) * 100) / 100;
+      delete batches[i].dataValues["createdAt"];
+      delete batches[i].dataValues["updatedAt"];
+      // console.log(batch);
+    }
+    res.json({
+      status: 1,
+      data: batches,
+      message: "Request completed successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: 0,
+      data: error,
+      message: "Something went wrong!",
+    });
   }
 };
 
@@ -248,71 +357,6 @@ exports.addQuestions = async (req, res, next) => {
     }
   } catch (err) {
     console.log(err);
-  }
-};
-
-exports.getBatchList = async (req, res, next) => {
-  try {
-    const batches = await Batch.findAll();
-    for (let i = 0; i < batches.length; i++) {
-      const batch = batches[i];
-      const students = await Student.findAll({ where: { batchId: batch.id }, include: [
-        {
-          model: OverallPerformance,
-          required: true, // Ensure that there is a matching entry in the OverallPerformance table
-        },
-      ]});
-      // console.log(students);
-      const count = students.length;
-      batches[i].dataValues["studentCount"] = count;
-      let sumAccuracy = 0;
-      for (let j = 0; j < count; j++) {
-        sumAccuracy += students[j].dataValues["overallPerformance"].dataValues["accuracy"];
-      }
-      batches[i].dataValues["averageAccuracy"] = Math.round(sumAccuracy/count * 100) / 100;
-      delete batches[i].dataValues["createdAt"];
-      delete batches[i].dataValues["updatedAt"];
-      // console.log(batch);
-    }
-    res.json({
-      status: 1,
-      data: batches,
-      message: "Request completed successfully",
-    });
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-exports.getStudentList = async (req, res, next) => {
-  try {
-    const students = await Student.findAll({
-      include: [
-        {
-          model: OverallPerformance,
-          required: true, // Ensure that there is a matching entry in the OverallPerformance table
-        },
-      ],
-    });
-    students.forEach((student, index) => {
-      const string = student.dataValues["cuetAttempts"];
-      const attempts = string.split(" ");
-      student.dataValues["cuetAttempts"] = attempts;
-      delete student.dataValues["password"];
-      delete student.dataValues["createdAt"];
-      delete student.dataValues["updatedAt"];
-      delete student.dataValues["overallPerformance"].dataValues["createdAt"];
-      delete student.dataValues["overallPerformance"].dataValues["updatedAt"];
-      delete student.dataValues["overallPerformance"].dataValues["studentId"];
-    });
-    // res.json(students);
-    res.json({
-      status: 1,
-      data: students,
-      message: "Request completed successfully",
-    });
-  } catch (error) {
-    console.error("Error:", error);
   }
 };
 

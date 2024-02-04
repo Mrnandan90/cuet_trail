@@ -178,7 +178,7 @@ function generateNewTokens(user) {
 }
 
 exports.authenticateAdminToken = (req, res, next) => {
-  console.log('In authentication')
+  // console.log('In authentication')
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   // console.log(token);
@@ -194,17 +194,15 @@ exports.authenticateAdminToken = (req, res, next) => {
       console.log(refreshToken);
 
       if (refreshToken) {
-        verifyAdminRefreshToken(refreshToken, (err, refreshUser) => {
+        verifyAdminRefreshToken(refreshToken, (err, user) => {
           if (err) {
             return res.status(401).json({ message: 'Invalid refresh token' });
           } else {
             // Generate new access and refresh tokens
-            const newTokens = generateAdminTokens(refreshUser);
+            const newTokens = generateAdminTokens(user);
             res.cookie('cuet_access_token', newTokens.accessToken, { httpOnly: true }); // Securely store refresh token
             res.cookie('cuet_refresh_token', newTokens.refreshToken, { httpOnly: true }); // Securely store refresh token
-            // res.setHeader('Authorization', `Bearer ${newTokens.accessToken}`);
-            // res.json({ accessToken: newTokens.accessToken });
-            console.log('Authenticated');
+            req.user = user;
             next();
           }
         });
@@ -213,7 +211,7 @@ exports.authenticateAdminToken = (req, res, next) => {
       }
     } else {
       req.user = user;
-      console.log('Authenticated');
+      // console.log('Authenticated');
       next();
     }
   });
