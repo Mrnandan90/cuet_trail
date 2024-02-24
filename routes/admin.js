@@ -12,6 +12,7 @@ router.get('/card/last-test-date', authenticateAdminToken, adminController.getLa
 router.get('/info/get-student-count', authenticateAdminToken, adminController.getStudentCount);
 router.get('/info/get-test-count', authenticateAdminToken, adminController.getTestCount);
 router.get('/info/get-batch-count', authenticateAdminToken, adminController.getBatchCount);
+router.get('/info/get-count-info', authenticateAdminToken, adminController.getCountInfo);
 
 router.get('/doughnut/get-performance-ratio', authenticateAdminToken, adminController.getOverallPerformanceRatio);
 router.get('/doughnut/get-all-batch-performance', authenticateAdminToken, adminController.getAllBatchPerformance);

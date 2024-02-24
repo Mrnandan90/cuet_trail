@@ -7,9 +7,9 @@ const sequelize = new Sequelize(
     {
         dialect: 'mysql',
         host: 'localhost',
+        timezone: '+05:30', // Set IST time zone explicitly
         dialectOptions: {
-            useUTC: false, // Ensure UTC is not forced
-            timezone: '+05:30' // Set IST time zone explicitly
+            // useUTC: false, // Ensure UTC is not forced
         }
     }
 );

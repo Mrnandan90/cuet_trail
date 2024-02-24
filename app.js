@@ -1,7 +1,7 @@
 const e = require("express");
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv").config();
-const cors = require('cors');
+const cors = require("cors");
 
 const adminRoutes = require("./routes/admin");
 const studentRoutes = require("./routes/student");
@@ -21,17 +21,26 @@ const app = e();
 
 app.use(e.urlencoded({ extended: true }));
 app.use(e.json());
-app.use(cookieParser());
+
+// app.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Origin', '*');
+//   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//   res.header('Access-Control-Allow-Credentials', 'true');
+//   next();
+// });
 app.use(cors({
-  origin: '*', // Specific allowed origin
+  origin: 'http://localhost:4200', // Specific allowed origin
   methods: 'GET,POST,DELETE', // Allowed methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+  credentials: true,
 }));
+app.use(cookieParser());
 
-app.post('/auth', auth.studentLogin)
-app.post('/admin-auth', auth.adminLogin)
-// app.post('/verify-auth', auth.authenticateToken);
-// app.post('/verify-admin-auth', auth.authenticateAdminToken);
+app.post("/student/auth", auth.studentLogin);
+app.post("/student/refresh-token", auth.refreshToken);
+app.post("/admin/auth", auth.adminLogin);
+app.post("/admin/refresh-token", auth.refreshAdminToken);
 app.use("/admin", adminRoutes);
 app.use("/student", studentRoutes);
 

@@ -9,6 +9,7 @@ const Performance = require("../models/performance");
 const OverallPerformance = require("../models/overallPerformance");
 const { Sequelize } = require("sequelize");
 const { Op } = require("sequelize");
+const TestItem = require("../models/testItem");
 
 exports.get10BestPerformingStudent = async (req, res, next) => {
   try {
@@ -45,7 +46,7 @@ exports.get10BestPerformingStudent = async (req, res, next) => {
     console.error("Error:", error);
     res.json({
       status: 0,
-      data: error,
+      data: null,
       message: "Something went wrong!",
     });
   }
@@ -86,7 +87,7 @@ exports.get10WorstPerformingStudent = async (req, res, next) => {
     console.error("Error:", error);
     res.json({
       status: 0,
-      data: error,
+      data: null,
       message: "Something went wrong!",
     });
   }
@@ -107,7 +108,7 @@ exports.getLastTestDate = async (req, res, next) => {
     console.error("Error:", error);
     res.json({
       status: 0,
-      data: error,
+      data: null,
       message: "Something went wrong!",
     });
   }
@@ -123,17 +124,23 @@ exports.getStudentList = async (req, res, next) => {
         },
       ],
     });
-    students.forEach((student, index) => {
+    // students.forEach(async (student, index) => {
+      
+    // });
+    for(let i = 0; i<students.length ; i++){
+      const student = students[i];
       const string = student.dataValues["cuetAttempts"];
       const attempts = string.split(" ");
-      student.dataValues["cuetAttempts"] = attempts;
-      delete student.dataValues["password"];
-      delete student.dataValues["createdAt"];
-      delete student.dataValues["updatedAt"];
-      delete student.dataValues["overallPerformance"].dataValues["createdAt"];
-      delete student.dataValues["overallPerformance"].dataValues["updatedAt"];
-      delete student.dataValues["overallPerformance"].dataValues["studentId"];
-    });
+      students[i].dataValues["cuetAttempts"] = attempts;
+      const testCount = await TestItem.count({where: {studentId: student.id}});
+      students[i].dataValues["totalTests"] = testCount;
+      delete students[i].dataValues["password"];
+      delete students[i].dataValues["createdAt"];
+      delete students[i].dataValues["updatedAt"];
+      delete students[i].dataValues["overallPerformance"].dataValues["createdAt"];
+      delete students[i].dataValues["overallPerformance"].dataValues["updatedAt"];
+      delete students[i].dataValues["overallPerformance"].dataValues["studentId"];
+    }
     // res.json(students);
     res.json({
       status: 1,
@@ -144,7 +151,7 @@ exports.getStudentList = async (req, res, next) => {
     console.error("Error:", error);
     res.json({
       status: 0,
-      data: error,
+      data: null,
       message: "Something went wrong!",
     });
   }
@@ -155,6 +162,7 @@ exports.getBatchList = async (req, res, next) => {
     const batches = await Batch.findAll();
     for (let i = 0; i < batches.length; i++) {
       const batch = batches[i];
+      const totalTests = await Test.count({where: {batchId: batch.id}});
       const students = await Student.findAll({
         where: { batchId: batch.id },
         include: [
@@ -167,6 +175,7 @@ exports.getBatchList = async (req, res, next) => {
       // console.log(students);
       const count = students.length;
       batches[i].dataValues["studentCount"] = count;
+      batches[i].dataValues["totalTests"] = totalTests;
       let sumAccuracy = 0;
       for (let j = 0; j < count; j++) {
         sumAccuracy +=
@@ -187,7 +196,7 @@ exports.getBatchList = async (req, res, next) => {
     console.log(error);
     res.json({
       status: 0,
-      data: error,
+      data: null,
       message: "Something went wrong!",
     });
   }
@@ -196,42 +205,78 @@ exports.getBatchList = async (req, res, next) => {
 exports.getStudentCount = async (req, res, next) => {
   try {
     const count = await Student.count({});
-    // console.log(count);
-    res.status(200);
-    const response = {};
-    response["status"] = 1;
-    response["total"] = count;
-    res.send(response);
+    res.json({
+      status: 1,
+      data: { totalStudents: count },
+      message: "Request completed successfully",
+    });
   } catch (err) {
     console.log(err);
+    res.json({
+      status: 0,
+      data: null,
+      message: "Something went wrong",
+    });
   }
 };
 
 exports.getTestCount = async (req, res, next) => {
   try {
     const count = await Test.count({});
-    // console.log(count);
-    res.status(200);
-    const response = {};
-    response["status"] = 1;
-    response["total"] = count;
-    res.send(response);
+    res.json({
+      status: 1,
+      data: { totalTests: count },
+      message: "Request completed successfully",
+    });
   } catch (err) {
     console.log(err);
+    res.json({
+      status: 0,
+      data: null,
+      message: "Something went wrong",
+    });
   }
 };
 
 exports.getBatchCount = async (req, res, next) => {
   try {
     const count = await Batch.count({});
-    // console.log(count);
-    res.status(200);
-    const response = {};
-    response["status"] = 1;
-    response["total"] = count;
-    res.send(response);
+    res.json({
+      status: 1,
+      data: { totalBatches: count },
+      message: "Request completed successfully",
+    });
   } catch (err) {
     console.log(err);
+    res.json({
+      status: 0,
+      data: null,
+      message: "Something went wrong",
+    });
+  }
+};
+
+exports.getCountInfo = async (req, res, next) => {
+  try {
+    const countStudent = await Student.count({});
+    const countTest = await Test.count({});
+    const countBatch = await Batch.count({});
+    res.json({
+      status: 1,
+      data: {
+        totalStudents: countStudent,
+        totalTests: countTest,
+        totalBatches: countBatch,
+      },
+      message: "Request completed successfully",
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({
+      status: 0,
+      data: null,
+      message: "Something went wrong",
+    });
   }
 };
 
@@ -253,14 +298,22 @@ exports.getOverallPerformanceRatio = async (req, res, next) => {
     });
     const total = +good + +bad;
     res.status(200);
-    const response = {};
-    response["status"] = 1;
-    response["goodPerforming"] = good;
-    response["badPerforming"] = bad;
-    response["total"] = total;
-    res.send(response);
+    const data = {};
+    data["good"] = good;
+    data["bad"] = bad;
+    data["total"] = total;
+    res.json({
+      status: 1,
+      data,
+      message: "Request completed successfully",
+    });
   } catch (err) {
     console.log(err);
+    res.json({
+      status: 0,
+      data: null,
+      message: "Something went wrong",
+    });
   }
 };
 

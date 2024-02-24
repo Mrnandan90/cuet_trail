@@ -3,7 +3,7 @@ POST http://localhost:3000/student/create
 Content-Type: application/json
 
 {
-  "phone": "8574587460",
+  "phone": "8574587468",
   "name":"Raj",
   "age":19,
   "email":"abhinav@gmail.com",

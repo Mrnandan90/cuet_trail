@@ -28,6 +28,10 @@ const Student = sequelize.define(
             type: Sequelize.STRING,
             allowNull: false
         },
+        resetToken : {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
         age: {
             type: Sequelize.INTEGER,
             allowNull:true
