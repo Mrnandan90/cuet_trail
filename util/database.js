@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize(
-    'cuet-corner',
+    'railway',
     'root',
-    'aditya',
+    'fG1Gf4GH2bDD3bGae4BDH5hFe-F4hFBe',
     {
         dialect: 'mysql',
         host: 'monorail.proxy.rlwy.net:18067',
