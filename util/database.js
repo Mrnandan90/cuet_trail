@@ -6,7 +6,7 @@ const sequelize = new Sequelize(
     'aditya',
     {
         dialect: 'mysql',
-        host: 'localhost',
+        host: 'monorail.proxy.rlwy.net:18067',
         dialectOptions: {
             useUTC: false, // Ensure UTC is not forced
             timezone: '+05:30' // Set IST time zone explicitly
