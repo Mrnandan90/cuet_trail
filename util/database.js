@@ -3,10 +3,10 @@ const Sequelize = require('sequelize');
 const sequelize = new Sequelize(
     'railway',
     'root',
-    'fG1Gf4GH2bDD3bGae4BDH5hFe-F4hFBe',
+    'cAcGAag-2a22GeF5a1aC5Ef6E5c15-Ec',
     {
         dialect: 'mysql',
-        host: 'monorail.proxy.rlwy.net:18067',
+        host: 'roundhouse.proxy.rlwy.net:10391',
         dialectOptions: {
             // useUTC: false, // Ensure UTC is not forced
             timezone: '+05:30' // Set IST time zone explicitly
